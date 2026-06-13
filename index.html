@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CC Nails — Catálogo Profesional</title>
+<link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400;600&family=Great+Vibes&family=Cormorant+Garamond:wght@300;400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --bg:#0a0507;--surface:#130b0e;--surface2:#1c1013;
+  --accent:#c8102e;--accent2:#8b0018;--accent-light:#ff3355;
+  --gold:#c9a84c;--text:#f5e6e8;--text-muted:#9a7e82;
+  --border:rgba(200,16,46,0.25);--glow:rgba(200,16,46,0.4);
+  --transition:0.4s cubic-bezier(0.23,1,0.32,1);
+}
+
+/* ─── VARIACIONES DE TEMAS (INTEGRADO DE INDEX-10) ─── */
+body.theme-rose{
+  --accent:#d4548a;--accent2:#8b2252;--accent-light:#ff6fa8;
+  --gold:#e8b4cb;--border:rgba(212,84,138,0.25);--glow:rgba(212,84,138,0.4);
+}
+body.theme-gold{
+  --accent:#c9a84c;--accent2:#7a600a;--accent-light:#f5d080;
+  --gold:#c9a84c;--border:rgba(201,168,76,0.25);--glow:rgba(201,168,76,0.4);
+}
+body.theme-violet{
+  --accent:#8b5cf6;--accent2:#4c1d95;--accent-light:#a78bfa;
+  --gold:#c4b5fd;--border:rgba(139,92,246,0.25);--glow:rgba(139,92,246,0.4);
+}
+body.theme-teal{
+  --accent:#0d9488;--accent2:#134e4a;--accent-light:#2dd4bf;
+  --gold:#99f6e4;--border:rgba(13,148,136,0.25);--glow:rgba(13,148,136,0.4);
+}
+body.theme-crimson{
+  --accent:#c8102e;--accent2:#8b0018;--accent-light:#ff3355;
+  --gold:#c9a84c;--border:rgba(200,16,46,0.25);--glow:rgba(200,16,46,0.4);
+}
+
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Josefin Sans',sans-serif;font-weight:300;min-height:100vh;padding-bottom:3rem;overflow-x:hidden;}
+
+/* ─── EFECTO DE PARTICULAS (INTEGRADO DE INDEX-10) ─── */
+#particles{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:hidden}
+.particle{position:absolute;width:2px;height:2px;background:var(--accent);border-radius:50%;opacity:0;animation:float linear infinite;transition: background 0.5s;}
+@keyframes float{
+  0%{transform:translateY(100vh) scale(0);opacity:0}
+  10%{opacity:0.6}
+  90%{opacity:0.3}
+  100%{transform:translateY(-10vh) scale(1.5);opacity:0}
+}
+
+/* BARRA SUPERIOR PREMIUM */
+.navbar {
+  position: sticky;
+  top: 0;
+  background: rgba(10, 5, 7, 0.85);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  z-index: 1000;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  transition: var(--transition);
+}
+.nav-logo {
+  font-family: 'Great Vibes', cursive;
+  font-size: 1.8rem;
+  color: var(--gold);
+  text-decoration: none;
+}
+.nav-links-wrap {
+  display: flex;
+  gap: 1.5rem;
+}
+.nav-link {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  font-weight: 400;
+  transition: color 0.3s;
+  cursor: pointer;
+  position: relative;
+  padding-bottom: 4px;
+}
+.nav-link::after {
+  content: ''; position: absolute; bottom: 0; left: 0; width: 0; height: 1px;
+  background: var(--accent); transition: width 0.3s;
+}
+.nav-link:hover, .nav-link.active {
+  color: var(--text);
+}
+.nav-link:hover::after, .nav-link.active::after {
+  width: 100%;
+}
+
+/* SECTOR DE SELECTOR DE TEMAS */
+.theme-wrap { position: relative; display: flex; align-items: center; }
+.theme-btn {
+  background: none; border: 1px solid var(--border); border-radius: 20px;
+  padding: 0.3rem 0.8rem; color: var(--text-muted); font-size: 0.7rem;
+  letter-spacing: 0.1em; cursor: pointer; transition: var(--transition);
+  font-family: 'Josefin Sans', sans-serif;
+}
+.theme-btn:hover { border-color: var(--accent); color: var(--accent); }
+.theme-panel {
+  position: absolute; top: calc(100% + 0.5rem); right: 0;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 12px; padding: 0.75rem; display: none; flex-wrap: wrap;
+  gap: 0.5rem; width: 180px; box-shadow: 0 8px 32px rgba(0,0,0,0.6); z-index: 1100;
+}
+.theme-panel.open { display: flex; }
+.color-dot {
+  width: 24px; height: 24px; border-radius: 50%; cursor: pointer;
+  border: 2px solid transparent; transition: transform 0.2s, border-color 0.2s;
+}
+.color-dot:hover { transform: scale(1.2); }
+.color-dot.active { border-color: white; }
+.color-dot[data-theme="crimson"] { background: #c8102e; }
+.color-dot[data-theme="rose"] { background: #d4548a; }
+.color-dot[data-theme="gold"] { background: #c9a84c; }
+.color-dot[data-theme="violet"] { background: #8b5cf6; }
+.color-dot[data-theme="teal"] { background: #0d9488; }
+
+/* BOTÓN WHATSAPP ESTILIZADO Y DISCRETO */
+.btn-wa {
+  background: var(--surface2);          /* Fondo oscuro mimetizado con la tarjeta */
+  color: var(--text-muted);             /* Texto suave para que no resalte de golpe */
+  border: 1px solid var(--border);       /* Borde fino con el color del tema actual */
+  text-decoration: none;
+  padding: 0.5rem 1rem;                 /* Relleno más pequeño y compacto */
+  border-radius: 4px;
+  font-weight: 400;                     /* Letra más delgada */
+  font-size: 0.8rem;                    /* Tamaño de letra reducido */
+  letter-spacing: 0.05em;
+  text-align: center;
+  transition: var(--transition);
+  display: inline-block;                /* Hace que el tamaño se ajuste al texto */
+  align-self: center;                   /* Lo centra horizontalmente en la tarjeta */
+  margin-top: auto;
+}
+
+/* EFECTO SUVE AL PASAR EL CURSOR */
+.btn-wa:hover {
+  background: rgba(37, 211, 102, 0.15); /* Verde WhatsApp sutil y translúcido */
+  color: #25d366;                       /* El texto se ilumina en verde */
+  border-color: #25d366;                /* El borde se ilumina en verde */
+  box-shadow: 0 4px 12px rgba(37, 211, 102, 0.2);
+}
+
+.item-info {
+  padding: 1.2rem; 
+  flex-grow: 1; 
+  display: flex; 
+  flex-direction: column; 
+  justify-content: space-between; 
+  gap: 0.8rem;
+  align-items: center; /* ALINEA EL BOTÓN COMPACTO AL CENTRO */
+}
+
+/* HAMBURGER */
+.hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 4px; }
+.hamburger span { width: 22px; height: 1.5px; background: var(--text); transition: var(--transition); }
+
+/* AJUSTES RESPONSIVOS DE NAVEGACIÓN */
+@media (max-width: 768px) {
+  .hamburger { display: flex; }
+  .nav-links-wrap {
+    position: absolute; top: 100%; left: 0; right: 0;
+    background: var(--surface); border-bottom: 1px solid var(--border);
+    flex-direction: column; gap: 0; padding: 0; display: none;
+  }
+  .nav-links-wrap.open { display: flex; }
+  .nav-link { padding: 1rem 2rem; display: block; border: none; }
+  .nav-link::after { display: none; }
+}
+
+/* HEADER CON IMAGEN DE FONDO DINÁMICA */
+header {
+  height: 320px;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 2rem;
+  box-shadow: inset 0 0 100px rgba(0,0,0,0.8);
+  transition: background-image 0.5s ease;
+  z-index: 1;
+}
+header::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(to bottom, rgba(10,5,7,0.2), var(--bg)); z-index: 1;
+}
+header h1 {
+  font-family: 'Great Vibes', cursive; font-size: 4.5rem; color: var(--gold);
+  text-shadow: 0 4px 15px rgba(0,0,0,0.7); z-index: 2; position: relative;
+}
+header span {
+  color: var(--text); font-size: 0.9rem; letter-spacing: 0.2em;
+  text-transform: uppercase; z-index: 2; position: relative; margin-top: 0.5rem;
+}
+
+.container{max-width:1100px; margin:0 auto; padding:0 1rem; position: relative; z-index: 1;}
+
+/* SECCIONES ANIMADAS */
+.main-section { display: none; animation: fadeIn 0.5s ease forwards; }
+.main-section.active { display: block; }
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.section-title { font-family: 'Cormorant Garamond', serif; font-size: 2.4rem; color: var(--gold); margin-bottom: 0.5rem; text-align: center; }
+.section-desc { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 2rem; text-align: center; }
+
+/* GRID DE TARJETAS */
+.item-list{display:grid; grid-template-columns:repeat(auto-fill, minmax(250px, 1fr)); gap:1.5rem; margin-top:1rem;}
+.item-card{background:var(--surface); border:1px solid var(--border); border-radius:6px; overflow:hidden; position:relative; display:flex; flex-direction:column; transition: var(--transition);}
+.item-card:hover { transform: translateY(-5px); border-color: var(--accent); box-shadow: 0 8px 24px var(--glow); }
+
+.item-card .img-container {
+  width: 100%; height: 260px; background:var(--surface2); 
+  display: flex; align-items: center; justify-content: center; overflow: hidden;
+}
+.item-card img{ max-width: 100%; max-height: 100%; object-fit: contain; display: block; }
+
+.item-info{padding:1.2rem; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; gap: 0.8rem;}
+.item-title{font-weight:400; font-size:1.1rem; color: var(--text);}
+.item-price{color:var(--gold); font-weight:600; font-size:1.1rem;}
+
+/* BOTÓN WHATSAPP */
+.btn-wa {
+  background: #25d366; color: white; text-decoration: none; padding: 0.6rem 1rem;
+  border-radius: 4px; font-weight: 600; font-size: 0.85rem; text-transform: uppercase;
+  letter-spacing: 0.05em; text-align: center; transition: var(--transition); display: block; margin-top: auto;
+}
+.btn-wa:hover { background: #20ba5a; box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4); }
+
+/* BADGE DE PROMOCIÓN */
+.promo-badge {
+  position: absolute; top: 10px; left: 10px; background: var(--accent);
+  color: white; padding: 4px 10px; font-size: 0.75rem; font-weight: 600;
+  text-transform: uppercase; border-radius: 4px; letter-spacing: 0.1em;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.5); z-index: 5; transition: background 0.5s;
+}
+</style>
+</head>
+<body>
+
+<div id="particles"></div>
+
+<nav class="navbar">
+  <div style="display: flex; align-items: center; gap: 1rem;">
+    <div class="hamburger" id="hamburger">
+      <span></span><span></span><span></span>
+    </div>
+    <a href="#" class="nav-logo">CC Nails</a>
+  </div>
+  
+  <div class="nav-links-wrap" id="navLinks">
+    <a class="nav-link active" onclick="switchTab('section-catalog', this)">Catálogo</a>
+    <a class="nav-link" onclick="switchTab('section-gallery', this)">Galería</a>
+    <a class="nav-link" onclick="switchTab('section-promos', this)">Promociones</a>
+  </div>
+
+  <div class="theme-wrap">
+    <button class="theme-btn" id="themeBtn">Elegir Tema</button>
+    <div class="theme-panel" id="themePanel">
+      <div class="color-dot active" data-theme="crimson" title="Carmesí"></div>
+      <div class="color-dot" data-theme="rose" title="Rosa"></div>
+      <div class="color-dot" data-theme="gold" title="Oro"></div>
+      <div class="color-dot" data-theme="violet" title="Violeta"></div>
+      <div class="color-dot" data-theme="teal" title="Turquesa"></div>
+    </div>
+  </div>
+</nav>
+
+<header id="mainHeader" style="background-image: url('https://images.unsplash.com/photo-1604654894610-df490651e56c?q=80&w=1000');">
+  <h1 id="headerTitle">CC Nails</h1>
+  <span>Alta Manicura & Estilo</span>
+</header>
+
+<div class="container">
+  
+  <section id="section-catalog" class="main-section active">
+    <h2 class="section-title">Nuestro Catálogo</h2>
+    <p class="section-desc">Diseños disponibles para tu próxima aplicación</p>
+    <div id="listCatalog" class="item-list">Cargando catálogo...</div>
+  </section>
+
+  <section id="section-gallery" class="main-section">
+    <h2 class="section-title">Galería de Trabajos</h2>
+    <p class="section-desc">Trabajos reales hechos en nuestro estudio</p>
+    <div id="listGallery" class="item-list">Cargando galería...</div>
+  </section>
+
+  <section id="section-promos" class="main-section">
+    <h2 class="section-title">Promociones Especiales</h2>
+    <p class="section-desc">Aprovecha nuestros paquetes por tiempo limitado</p>
+    <div id="listPromos" class="item-list">Cargando promociones...</div>
+  </section>
+
+</div>
+
+<script>
+// Manejo de Navegación por Pestañas
+function switchTab(sectionId, element) {
+  document.querySelectorAll('.main-section').forEach(sec => sec.classList.remove('active'));
+  document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+  
+  document.getElementById(sectionId).classList.add('active');
+  element.classList.add('active');
+  window.scrollTo({ top: 340, behavior: 'smooth' });
+}
+
+// ─── CONTROLADORES MENÚ HAMBURGUESA Y TEMAS (INDEX-10) ───
+const hamburger = document.getElementById('hamburger');
+const navLinks = document.getElementById('navLinks');
+hamburger.addEventListener('click', () => navLinks.classList.toggle('open'));
+navLinks.querySelectorAll('.nav-link').forEach(a => a.addEventListener('click', () => navLinks.classList.remove('open')));
+
+const themeBtn = document.getElementById('themeBtn');
+const themePanel = document.getElementById('themePanel');
+themeBtn.addEventListener('click', (e) => { e.stopPropagation(); themePanel.classList.toggle('open'); });
+document.addEventListener('click', () => themePanel.classList.remove('open'));
+
+document.querySelectorAll('.color-dot').forEach(dot => {
+  dot.addEventListener('click', function() {
+    document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('active'));
+    this.classList.add('active');
+    
+    // Cambiar la clase del body para alternar variables CSS
+    const nuevoTema = this.dataset.theme;
+    document.body.className = '';
+    if(nuevoTema !== 'crimson') {
+      document.body.classList.add('theme-' + nuevoTema);
+    }
+  });
+});
+
+// Generación Dinámica de Partículas de Fondo
+function createParticles() {
+  const container = document.getElementById('particles');
+  for(let i=0; i<30; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.cssText = `
+      left:${Math.random()*100}%;
+      animation-duration:${8 + Math.random()*12}s;
+      animation-delay:${Math.random()*10}s;
+      width:${1 + Math.random()*2}px;
+      height:${1 + Math.random()*2}px;
+    `;
+    container.appendChild(p);
+  }
+}
+window.addEventListener('DOMContentLoaded', createParticles);
+</script>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, onSnapshot, orderBy, query } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyB0ahP8K53dm8BIRhjXYxCbSJ8sNfQi-NI",
+  authDomain: "refugio-de-patitas.firebaseapp.com",
+  projectId: "refugio-de-patitas",
+  storageBucket: "refugio-de-patitas.firebasestorage.app",
+  messagingSenderId: "5921473252",
+  appId: "1:5921473252:web:16f18c4c7cf1ad1509e2f1"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const WHATSAPP_NUM = "528341988194";
+
+// Listener Cabecera (Header Config de Firestore)
+onSnapshot(collection(db, "ccnails_config"), (snapshot) => {
+  snapshot.forEach(res => {
+    const config = res.data();
+    if(config.headerFondo) {
+      document.getElementById('mainHeader').style.backgroundImage = `url('${config.headerFondo}')`;
+    }
+  });
+});
+
+// Cargar Catálogo con link a WhatsApp
+onSnapshot(query(collection(db, "ccnails_catalog"), orderBy("fecha", "desc")), (snapshot) => {
+  const divCatalog = document.getElementById('listCatalog'); divCatalog.innerHTML = '';
+  snapshot.forEach((res) => {
+    const item = res.data();
+    const textWa = encodeURIComponent(`¡Hola! Me interesa agendar una cita para el diseño del catálogo: "${item.titulo}" ($${item.precio} MXN).`);
+    divCatalog.innerHTML += `
+      <div class="item-card">
+        <div class="img-container"><img src="${item.imagen}" onerror="this.src='https://via.placeholder.com/250x250?text=Error+Foto'"></div>
+        <div class="item-info">
+          <div><div class="item-title">${item.titulo}</div><div class="item-price">$${item.precio} MXN</div></div>
+          <a href="https://wa.me/${WHATSAPP_NUM}?text=${textWa}" target="_blank" class="btn-wa">Agenda tu cita</a>
+        </div>
+      </div>`;
+  });
+  if(snapshot.empty) divCatalog.innerHTML = '<p style="color:var(--text-muted); text-align:center; width:100%;">No hay diseños disponibles.</p>';
+});
+
+// Cargar Galería con link a WhatsApp
+onSnapshot(query(collection(db, "ccnails_gallery"), orderBy("fecha", "desc")), (snapshot) => {
+  const divGallery = document.getElementById('listGallery'); divGallery.innerHTML = '';
+  snapshot.forEach((res) => {
+    const item = res.data();
+    const textWa = encodeURIComponent(`¡Hola! Estaba viendo tu galería y me encantó este trabajo: "${item.titulo}". ¿Qué costo tendría una aplicación similar?`);
+    divGallery.innerHTML += `
+      <div class="item-card">
+        <div class="img-container"><img src="${item.imagen}" onerror="this.src='https://via.placeholder.com/250x250?text=Error+Foto'"></div>
+        <div class="item-info">
+          <div class="item-title" style="margin-bottom:0.5rem;">${item.titulo}</div>
+          <a href="https://wa.me/${WHATSAPP_NUM}?text=${textWa}" target="_blank" class="btn-wa">Cotizar Estilo</a>
+        </div>
+      </div>`;
+  });
+  if(snapshot.empty) divGallery.innerHTML = '<p style="color:var(--text-muted); text-align:center; width:100%;">No hay fotos en la galería.</p>';
+});
+
+// Cargar Promociones con link a WhatsApp
+onSnapshot(query(collection(db, "ccnails_promos"), orderBy("fecha", "desc")), (snapshot) => {
+  const divPromos = document.getElementById('listPromos'); divPromos.innerHTML = '';
+  snapshot.forEach((res) => {
+    const item = res.data();
+    const textWa = encodeURIComponent(`¡Hola! Quiero aprovechar la promoción de: "${item.titulo}".`);
+    divPromos.innerHTML += `
+      <div class="item-card">
+        <span class="promo-badge">PROMO 🔥</span>
+        <div class="img-container"><img src="${item.imagen}" onerror="this.src='https://via.placeholder.com/250x250?text=Error+Foto'"></div>
+        <div class="item-info">
+          <div class="item-title" style="margin-bottom:0.5rem;">${item.titulo}</div>
+          <a href="https://wa.me/${WHATSAPP_NUM}?text=${textWa}" target="_blank" class="btn-wa">Apartar Promoción</a>
+        </div>
+      </div>`;
+  });
+  if(snapshot.empty) divPromos.innerHTML = '<p style="color:var(--text-muted); text-align:center; width:100%;">No hay promociones activas.</p>';
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CC Nails — Panel de Administración</title>
+<link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400;600&family=Great+Vibes&family=Cormorant+Garamond:wght@300;400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0507;--surface:#130b0e;--surface2:#1c1013;
+  --accent:#c8102e;--accent2:#8b0018;--accent-light:#ff3355;
+  --gold:#c9a84c;--text:#f5e6e8;--text-muted:#9a7e82;
+  --border:rgba(200,16,46,0.25);--glow:rgba(200,16,46,0.4);
+  --success:#22c55e;--danger:#ef4444;--warning:#f59e0b;
+}
+body{background:var(--bg);color:var(--text);font-family:'Josefin Sans',sans-serif;font-weight:300;min-height:100vh;padding:2rem 1rem;}
+.container{max-width:1100px;margin:0 auto}
+header{display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem;border-bottom:1px solid var(--border);padding-bottom:1rem}
+h1{font-family:'Great Vibes',cursive;font-size:2.5rem;color:var(--gold)}
+
+/* SECCIÓN ESPECIAL HEADER BANNER CONFIG */
+.banner-config {
+  background: var(--surface);
+  border: 1px dashed var(--gold);
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 2.5rem;
+  text-align: center;
+}
+
+/* FORMULARIOS GRID */
+.grid-forms{display:grid;grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));gap:2rem;margin-bottom:3rem}
+.card-form{background:var(--surface);border:1px solid var(--border);padding:1.5rem;border-radius:8px;position:relative;}
+.card-form h2{font-family:'Cormorant Garamond',serif;font-size:1.6rem;color:var(--gold);margin-bottom:1rem;border-bottom:1px solid rgba(201,168,76,0.1);padding-bottom:0.5rem}
+
+.form-group{margin-bottom:1.2rem;display:flex;flex-direction:column;gap:0.5rem}
+.form-group label{font-size:0.8rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-muted)}
+.form-group input{background:var(--surface2);border:1px solid var(--border);padding:0.75rem;color:var(--text);border-radius:4px;font-family:inherit}
+.form-group input:focus{outline:none;border-color:var(--accent)}
+
+/* DRAG & DROP UPLOADER */
+.image-uploader{
+  border:2px dashed var(--border);background:var(--surface2);
+  padding:1.5rem;text-align:center;border-radius:6px;cursor:pointer;
+  transition:all 0.3s ease;position:relative;min-height:120px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+}
+.image-uploader:hover{border-color:var(--accent);background:rgba(200,16,46,0.05)}
+.image-uploader input[type="file"]{display:none}
+.uploader-text{font-size:0.85rem;color:var(--text-muted)}
+.preview-zone{display:none;width:100%;height:100%;position:absolute;top:0;left:0;background:var(--surface2);border-radius:6px;overflow:hidden}
+.preview-zone img{width:100%;height:100%;object-fit:cover}
+.preview-zone .remove-img{position:absolute;top:5px;right:5px;background:var(--danger);color:white;border:none;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.7rem}
+
+button.btn{background:var(--accent);color:white;border:none;padding:0.75rem 1.5rem;border-radius:4px;cursor:pointer;font-family:inherit;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;transition:0.3s; width:100%; margin-top: 5px;}
+button.btn:hover{background:var(--accent-light);box-shadow:0 0 12px var(--glow)}
+
+.btn-cancelar { background: none; border: none; color: var(--text-muted); cursor: pointer; display: none; font-size: 0.8rem; text-decoration: underline; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 10px; width: 100%; text-align: center;}
+
+/* LISTADOS GRID */
+.item-list{display:grid;grid-template-columns:repeat(auto-fill, minmax(220px, 1fr));gap:1.5rem;margin-top:1rem; margin-bottom:2rem;}
+.item-card{background:var(--surface);border:1px solid var(--border);border-radius:6px;overflow:hidden;position:relative;display:flex;flex-direction:column}
+
+.item-card .img-container {
+  width: 100%;
+  height: 200px; 
+  background:var(--surface2); 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.item-card img{
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain; 
+  display: block;
+}
+
+.item-info{padding:1rem; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between;}
+.item-title{font-weight:400;font-size:1rem;margin-bottom:0.25rem}
+.item-price{color:var(--gold);font-weight:600}
+
+.acciones-card { display: flex; gap: 5px; margin-top: 10px; }
+.btn-card-del { background: #ff4444; color: white; border: none; padding: 6px; border-radius: 4px; cursor: pointer; font-weight: bold; flex: 1; font-size: 0.8rem; }
+.btn-card-edit { background: #4CAF50; color: white; border: none; padding: 6px; border-radius: 4px; cursor: pointer; font-weight: bold; flex: 1; font-size: 0.8rem; }
+
+/* TOAST */
+.toast{position:fixed;bottom:20px;right:20px;padding:1rem 1.5rem;border-radius:4px;background:var(--surface);border-left:4px solid var(--accent);color:var(--text);z-index:2000;transform:translateY(150%);transition:0.3s;box-shadow:0 5px 15px rgba(0,0,0,0.5)}
+.toast.show{transform:translateY(0)}
+.toast.success{border-left-color:var(--success)}
+.toast.warning{border-left-color:var(--warning)}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <h1>CC Nails — Administración</h1>
+    <span style="color:var(--text-muted); font-size:0.85rem;">Panel de Control</span>
+  </header>
+
+  <div class="banner-config">
+    <h2 style="font-family:'Cormorant Garamond',serif; font-size:1.4rem; color:var(--gold); margin-bottom:0.8rem;">Subir Fondo de Banner Superior (Header)</h2>
+    <div style="max-width:400px; margin: 0 auto 1rem auto;">
+      <div class="image-uploader" onclick="document.getElementById('fileHeaderBg').click()">
+        <span class="uploader-text">📸 Seleccionar Imagen de Fondo</span>
+        <input type="file" id="fileHeaderBg" accept="image/*" onchange="handleFileSelect(this, 'previewHeader')">
+        <div class="preview-zone" id="previewHeader">
+          <img src="" alt="Fondo Vista Previa">
+          <button type="button" class="remove-img" onclick="clearUploader('fileHeaderBg', 'previewHeader', event)">Cambiar</button>
+        </div>
+      </div>
+    </div>
+    <button id="btnUploadHeader" class="btn" style="max-width:300px; background:var(--gold); color:black;">Establecer Imagen de Fondo</button>
+  </div>
+
+  <div class="grid-forms">
+    <div class="card-form" id="cardCatalog">
+      <h2 id="titleCatalogForm">Agregar al Catálogo</h2>
+      <form id="formCatalog">
+        <div class="form-group">
+          <label>Nombre del Diseño</label>
+          <input type="text" id="catTitle" required placeholder="Ej. Esmaltado Ruso con Pedrería">
+        </div>
+        <div class="form-group">
+          <label>Precio ($ MXN)</label>
+          <input type="number" id="catPrice" required placeholder="350">
+        </div>
+        <div class="form-group">
+          <label>Foto del Diseño</label>
+          <div class="image-uploader" onclick="document.getElementById('fileCatalog').click()">
+            <span class="uploader-text">✨ Seleccionar Foto</span>
+            <input type="file" id="fileCatalog" accept="image/*" onchange="handleFileSelect(this, 'previewCat')">
+            <div class="preview-zone" id="previewCat">
+              <img src="" alt="Vista previa">
+              <button type="button" class="remove-img" onclick="clearUploader('fileCatalog', 'previewCat', event)">Cambiar</button>
+            </div>
+          </div>
+        </div>
+        <input type="hidden" id="catExistingUrl">
+        <button type="submit" id="btnSubmitCatalog" class="btn">Guardar en Catálogo</button>
+        <button type="button" id="btnCancelCatalog" class="btn-cancelar" onclick="cancelarEdicion('catalog')">Cancelar Edición</button>
+      </form>
+    </div>
+
+    <div class="card-form" id="cardGallery">
+      <h2 id="titleGalleryForm">Agregar a la Galería</h2>
+      <form id="formGallery">
+        <div class="form-group">
+          <label>Título / Descripción Corta</label>
+          <input type="text" id="galTitle" required placeholder="Ej. Set Acrílico Escultural">
+        </div>
+        <div class="form-group">
+          <label>Foto del Trabajo</label>
+          <div class="image-uploader" onclick="document.getElementById('fileGallery').click()">
+            <span class="uploader-text">✨ Seleccionar Foto</span>
+            <input type="file" id="fileGallery" accept="image/*" onchange="handleFileSelect(this, 'previewGal')">
+            <div class="preview-zone" id="previewGal">
+              <img src="" alt="Vista previa">
+              <button type="button" class="remove-img" onclick="clearUploader('fileGallery', 'previewGal', event)">Cambiar</button>
+            </div>
+          </div>
+        </div>
+        <input type="hidden" id="galExistingUrl">
+        <button type="submit" id="btnSubmitGallery" class="btn">Guardar en Galería</button>
+        <button type="button" id="btnCancelGallery" class="btn-cancelar" onclick="cancelarEdicion('gallery')">Cancelar Edición</button>
+      </form>
+    </div>
+
+    <div class="card-form" id="cardPromos">
+      <h2 id="titlePromosForm">Agregar Promoción</h2>
+      <form id="formPromos">
+        <div class="form-group">
+          <label>Título de la Promo / Combo</label>
+          <input type="text" id="promoTitle" required placeholder="Ej. Retoque + Glitter Gratis">
+        </div>
+        <div class="form-group">
+          <label>Foto publicitaria de la Promo</label>
+          <div class="image-uploader" onclick="document.getElementById('filePromo').click()">
+            <span class="uploader-text">✨ Seleccionar Foto</span>
+            <input type="file" id="filePromo" accept="image/*" onchange="handleFileSelect(this, 'previewPromo')">
+            <div class="preview-zone" id="previewPromo">
+              <img src="" alt="Vista previa">
+              <button type="button" class="remove-img" onclick="clearUploader('filePromo', 'previewPromo', event)">Cambiar</button>
+            </div>
+          </div>
+        </div>
+        <input type="hidden" id="promoExistingUrl">
+        <button type="submit" id="btnSubmitPromos" class="btn" style="background:var(--warning); color:black;">Publicar Promoción</button>
+        <button type="button" id="btnCancelPromos" class="btn-cancelar" onclick="cancelarEdicion('promos')">Cancelar Edición</button>
+      </form>
+    </div>
+  </div>
+
+  <h2 style="font-family:'Cormorant Garamond',serif; font-size:2rem; color:var(--gold); margin-bottom:1rem;">Artículos Guardados (Gestión)</h2>
+  
+  <h3 style="font-size:1rem; text-transform:uppercase; color:var(--text-muted);">Catálogo actual</h3>
+  <div id="listCatalog" class="item-list">Cargando...</div>
+
+  <h3 style="font-size:1rem; text-transform:uppercase; color:var(--text-muted);">Galería actual</h3>
+  <div id="listGallery" class="item-list">Cargando...</div>
+
+  <h3 style="font-size:1rem; text-transform:uppercase; color:var(--text-muted);">Promociones actuales</h3>
+  <div id="listPromos" class="item-list">Cargando...</div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+function handleFileSelect(input, previewId) {
+  const file = input.files[0];
+  if (file) {
+    const previewZone = document.getElementById(previewId);
+    const img = previewZone.querySelector('img');
+    img.src = URL.createObjectURL(file);
+    previewZone.style.display = 'block';
+  }
+}
+
+function clearUploader(inputId, previewId, event) {
+  event.stopPropagation();
+  document.getElementById(inputId).value = "";
+  document.getElementById(previewId).style.display = 'none';
+}
+
+function showToast(msg, type='success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `toast ${type} show`;
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+</script>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, updateDoc, orderBy, query, serverTimestamp, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyB0ahP8K53dm8BIRhjXYxCbSJ8sNfQi-NI",
+  authDomain: "refugio-de-patitas.firebaseapp.com",
+  projectId: "refugio-de-patitas",
+  storageBucket: "refugio-de-patitas.firebasestorage.app",
+  messagingSenderId: "5921473252",
+  appId: "1:5921473252:web:16f18c4c7cf1ad1509e2f1"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const CLOUD_NAME = 'daafrfwj1'; 
+const UPLOAD_PRESET = 'jonathan_delangel';
+
+// Identificadores de control de edición mutua
+let editCatalogId = null;
+let editGalleryId = null;
+let editPromosId = null;
+
+// --- DECLARACIÓN DE ACCIONES GLOBALES CARD ---
+window.deleteItem = async function(coleccion, id) {
+  if(confirm("¿Eliminar este registro permanentemente?")) {
+    try {
+      await deleteDoc(doc(db, coleccion, id));
+      showToast('Eliminado con éxito ✓');
+    } catch (e) { showToast('Error: ' + e.message, 'danger'); }
+  }
+}
+
+window.prepararEdicion = function(seccion, id, titulo, variableExtra, imagenUrl) {
+  window.scrollTo({ top: 350, behavior: 'smooth' });
+
+  if(seccion === 'catalog') {
+    editCatalogId = id;
+    document.getElementById('catTitle').value = titulo;
+    document.getElementById('catPrice').value = variableExtra; // Envía precio
+    document.getElementById('catExistingUrl').value = imagenUrl;
+    
+    const preview = document.getElementById('previewCat');
+    preview.querySelector('img').src = imagenUrl;
+    preview.style.display = 'block';
+
+    document.getElementById('titleCatalogForm').innerText = "Editar Artículo Catálogo ✏️";
+    document.getElementById('btnSubmitCatalog').innerText = "Guardar Cambios";
+    document.getElementById('btnCancelCatalog').style.display = "block";
+  } 
+  else if(seccion === 'gallery') {
+    editGalleryId = id;
+    document.getElementById('galTitle').value = titulo;
+    document.getElementById('galExistingUrl').value = imagenUrl;
+
+    const preview = document.getElementById('previewGal');
+    preview.querySelector('img').src = imagenUrl;
+    preview.style.display = 'block';
+
+    document.getElementById('titleGalleryForm').innerText = "Editar Artículo Galería ✏️";
+    document.getElementById('btnSubmitGallery').innerText = "Guardar Cambios";
+    document.getElementById('btnCancelGallery').style.display = "block";
+  } 
+  else if(seccion === 'promos') {
+    editPromosId = id;
+    document.getElementById('promoTitle').value = titulo;
+    document.getElementById('promoExistingUrl').value = imagenUrl;
+
+    const preview = document.getElementById('previewPromo');
+    preview.querySelector('img').src = imagenUrl;
+    preview.style.display = 'block';
+
+    document.getElementById('titlePromosForm').innerText = "Editar Promoción ✏️";
+    document.getElementById('btnSubmitPromos').innerText = "Guardar Cambios";
+    document.getElementById('btnCancelPromos').style.display = "block";
+  }
+}
+
+window.cancelarEdicion = function(seccion) {
+  if(seccion === 'catalog') {
+    editCatalogId = null;
+    document.getElementById('formCatalog').reset();
+    document.getElementById('previewCat').style.display = 'none';
+    document.getElementById('catExistingUrl').value = "";
+    document.getElementById('titleCatalogForm').innerText = "Agregar al Catálogo";
+    document.getElementById('btnSubmitCatalog').innerText = "Guardar en Catálogo";
+    document.getElementById('btnCancelCatalog').style.display = "none";
+  } 
+  else if(seccion === 'gallery') {
+    editGalleryId = null;
+    document.getElementById('formGallery').reset();
+    document.getElementById('previewGal').style.display = 'none';
+    document.getElementById('galExistingUrl').value = "";
+    document.getElementById('titleGalleryForm').innerText = "Agregar a la Galería";
+    document.getElementById('btnSubmitGallery').innerText = "Guardar en Galería";
+    document.getElementById('btnCancelGallery').style.display = "none";
+  } 
+  else if(seccion === 'promos') {
+    editPromosId = null;
+    document.getElementById('formPromos').reset();
+    document.getElementById('previewPromo').style.display = 'none';
+    document.getElementById('promoExistingUrl').value = "";
+    document.getElementById('titlePromosForm').innerText = "Agregar Promoción";
+    document.getElementById('btnSubmitPromos').innerText = "Publicar Promoción";
+    document.getElementById('btnCancelPromos').style.display = "none";
+  }
+}
+
+// Envío a Cloudinary
+async function uploadToCloudinary(file) {
+  const url = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`;
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('upload_preset', UPLOAD_PRESET);
+
+  const res = await fetch(url, { method: 'POST', body: formData });
+  if (!res.ok) throw new Error('Fallo al subir imagen');
+  const data = await res.json();
+  return data.secure_url;
+}
+
+// SUBIR FONDO DE HEADER
+document.getElementById('btnUploadHeader').onclick = async () => {
+  const fileInput = document.getElementById('fileHeaderBg');
+  if(!fileInput.files[0]) return showToast('Elige una foto primero', 'warning');
+  
+  try {
+    showToast('Subiendo fondo a Cloudinary...', 'warning');
+    const url = await uploadToCloudinary(fileInput.files[0]);
+    await setDoc(doc(db, "ccnails_config", "global"), { headerFondo: url });
+    document.getElementById('previewHeader').style.display = 'none';
+    fileInput.value = "";
+    showToast('¡Fondo de Header actualizado con éxito! 💅');
+  } catch(e) { showToast('Error: ' + e.message, 'danger'); }
+};
+
+// LISTENERS EN TIEMPO REAL
+onSnapshot(query(collection(db, "ccnails_catalog"), orderBy("fecha", "desc")), (snap) => {
+  const div = document.getElementById('listCatalog'); div.innerHTML = '';
+  snap.forEach(res => {
+    const item = res.data();
+    div.innerHTML += `<div class="item-card">
+      <div class="img-container"><img src="${item.imagen}"></div>
+      <div class="item-info">
+        <div>
+          <div class="item-title">${item.titulo}</div>
+          <div class="item-price">$${item.precio}</div>
+        </div>
+        <div class="acciones-card">
+          <button class="btn-card-edit" onclick="prepararEdicion('catalog', '${res.id}', '${item.titulo}', '${item.precio}', '${item.imagen}')">Editar</button>
+          <button class="btn-card-del" onclick="deleteItem('ccnails_catalog', '${res.id}')">✕</button>
+        </div>
+      </div>
+    </div>`;
+  });
+});
+
+onSnapshot(query(collection(db, "ccnails_gallery"), orderBy("fecha", "desc")), (snap) => {
+  const div = document.getElementById('listGallery'); div.innerHTML = '';
+  snap.forEach(res => {
+    const item = res.data();
+    div.innerHTML += `<div class="item-card">
+      <div class="img-container"><img src="${item.imagen}"></div>
+      <div class="item-info">
+        <div class="item-title">${item.titulo}</div>
+        <div class="acciones-card">
+          <button class="btn-card-edit" onclick="prepararEdicion('gallery', '${res.id}', '${item.titulo}', '', '${item.imagen}')">Editar</button>
+          <button class="btn-card-del" onclick="deleteItem('ccnails_gallery', '${res.id}')">✕</button>
+        </div>
+      </div>
+    </div>`;
+  });
+});
+
+onSnapshot(query(collection(db, "ccnails_promos"), orderBy("fecha", "desc")), (snap) => {
+  const div = document.getElementById('listPromos'); div.innerHTML = '';
+  snap.forEach(res => {
+    const item = res.data();
+    div.innerHTML += `<div class="item-card">
+      <div class="img-container"><img src="${item.imagen}"></div>
+      <div class="item-info">
+        <div class="item-title">${item.titulo}</div>
+        <div class="acciones-card">
+          <button class="btn-card-edit" onclick="prepararEdicion('promos', '${res.id}', '${item.titulo}', '', '${item.imagen}')">Editar</button>
+          <button class="btn-card-del" onclick="deleteItem('ccnails_promos', '${res.id}')">✕</button>
+        </div>
+      </div>
+    </div>`;
+  });
+});
+
+// SUBMITS FORMULARIOS CON MUTACIÓN (ADD / UPDATE)
+document.getElementById('formCatalog').addEventListener('submit', async function(e) {
+  e.preventDefault(); 
+  const file = document.getElementById('fileCatalog').files[0];
+  const existingUrl = document.getElementById('catExistingUrl').value;
+  
+  if(!file && !existingUrl) return showToast('Falta la imagen', 'warning');
+  
+  try {
+    let url = existingUrl;
+    if(file) {
+      showToast('Subiendo nueva imagen a Cloudinary...', 'warning');
+      url = await uploadToCloudinary(file);
+    }
+
+    if(editCatalogId) {
+      // PROCESAR ACTUALIZACIÓN
+      showToast('Guardando cambios...', 'warning');
+      await updateDoc(doc(db, "ccnails_catalog", editCatalogId), {
+        titulo: document.getElementById('catTitle').value,
+        precio: document.getElementById('catPrice').value,
+        imagen: url
+      });
+      showToast('¡Catálogo actualizado con éxito! ✓');
+      cancelarEdicion('catalog');
+    } else {
+      // PROCESAR PUBLICACIÓN NUEVA
+      showToast('Publicando nuevo artículo...', 'warning');
+      await addDoc(collection(db, "ccnails_catalog"), {
+        fecha: serverTimestamp(), titulo: document.getElementById('catTitle').value, precio: document.getElementById('catPrice').value, imagen: url
+      });
+      this.reset(); document.getElementById('previewCat').style.display='none'; showToast('Añadido ✓');
+    }
+  } catch(err) { showToast(err.message, 'danger'); }
+});
+
+document.getElementById('formGallery').addEventListener('submit', async function(e) {
+  e.preventDefault(); 
+  const file = document.getElementById('fileGallery').files[0];
+  const existingUrl = document.getElementById('galExistingUrl').value;
+  
+  if(!file && !existingUrl) return showToast('Falta la foto', 'warning');
+  
+  try {
+    let url = existingUrl;
+    if(file) {
+      showToast('Subiendo nueva foto...', 'warning');
+      url = await uploadToCloudinary(file);
+    }
+
+    if(editGalleryId) {
+      showToast('Guardando cambios...', 'warning');
+      await updateDoc(doc(db, "ccnails_gallery", editGalleryId), {
+        titulo: document.getElementById('galTitle').value,
+        imagen: url
+      });
+      showToast('¡Galería actualizada! ✓');
+      cancelarEdicion('gallery');
+    } else {
+      await addDoc(collection(db, "ccnails_gallery"), {
+        fecha: serverTimestamp(), titulo: document.getElementById('galTitle').value, imagen: url
+      });
+      this.reset(); document.getElementById('previewGal').style.display='none'; showToast('Agregado ✓');
+    }
+  } catch(err) { showToast(err.message, 'danger'); }
+});
+
+document.getElementById('formPromos').addEventListener('submit', async function(e) {
+  e.preventDefault(); 
+  const file = document.getElementById('filePromo').files[0];
+  const existingUrl = document.getElementById('promoExistingUrl').value;
+  
+  if(!file && !existingUrl) return showToast('Falta la imagen publicitaria', 'warning');
+  
+  try {
+    let url = existingUrl;
+    if(file) {
+      showToast('Subiendo nuevo arte publicitario...', 'warning');
+      url = await uploadToCloudinary(file);
+    }
+
+    if(editPromosId) {
+      showToast('Guardando cambios...', 'warning');
+      await updateDoc(doc(db, "ccnails_promos", editPromosId), {
+        titulo: document.getElementById('promoTitle').value,
+        imagen: url
+      });
+      showToast('¡Promoción modificada! ✓');
+      cancelarEdicion('promos');
+    } else {
+      await addDoc(collection(db, "ccnails_promos"), {
+        fecha: serverTimestamp(), titulo: document.getElementById('promoTitle').value, imagen: url
+      });
+      this.reset(); document.getElementById('previewPromo').style.display='none'; showToast('¡Promoción Publicada! ✓');
+    }
+  } catch(err) { showToast(err.message, 'danger'); }
+});
+</script>
+</body>
+</html>
